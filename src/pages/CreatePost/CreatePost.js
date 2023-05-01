@@ -3,6 +3,7 @@ import styles from './CreatePost.module.css'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthValue } from "../../context/AuthContext"
+import { useInsertDocument } from '../../hooks/useInsertDocument';
 
 const CreatePost = () => {
 
@@ -11,10 +12,48 @@ const CreatePost = () => {
   const [body, setBody] = useState("");
   const [tags, setTags] = useState([]);
   const [formError, setFormError] = useState(""); 
-  
 
+  const { insertDocument, response } = useInsertDocument("posts");
+
+  const navigate = useNavigate();
+
+  const { user } = useAuthValue();
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setFormError("");
+
+    // Validate image URL
+    try{
+      new URL(image)
+    } catch(error){
+      setFormError("A imagem precisa ser uma URL.");
+    }
+
+    // criar array de tags
+    const tagsArray = tags.split(",").map((tag) => tag.trim().toLowerCase())
+
+    // checar todos os valores
+    if(!title || !image || !tags || !body){
+      setFormError("Por favor, preencha todos os campos!");
+    }
+
+    if(formError) return;
+
+    insertDocument({
+      title,
+      image,
+      body,
+      tags,
+      uid: user.uid,
+      createdBy: user.displayName
+    })
+
+    // redirect to homepage
+    navigate("/")
+
+
   }
 
   return (
@@ -65,14 +104,14 @@ const CreatePost = () => {
               value={tags}
             />
           </label>
-          <button className='btn'>Criar Post</button>
-          {/* {!loading && <button className="btn">Cadastrar</button>}
-          {loading && ( 
+          {!response.loading && <button className="btn">Criar Post</button>}
+          {response.loading && ( 
             <button disabled className="btn">
               Aguarde...
             </button> 
           )}
-          {error && <p className='error'>{error}</p>} */}
+          {response.error && <p className='error'>{response.error}</p>}
+          {formError && <p className='error'>{formError}</p>}
         </form>
     </div>
   )
