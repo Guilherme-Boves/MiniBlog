@@ -20,6 +20,8 @@ import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import CreatePost from './pages/CreatePost/CreatePost';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Search from './pages/Search/Search';
+import Post from './pages/Post/Post';
 
 function App() {
 
@@ -46,12 +48,10 @@ function App() {
 
           <div className="container">
             <Routes>
-              <Route 
-                path='/' 
-                element={<Home />} />
-              <Route 
-                path='/sobre' 
-                element={<About />} />
+              <Route path='/' element={<Home />} />
+              <Route path='/sobre' element={<About />} />
+              <Route path='/search' element={<Search/>} />
+              <Route path='/posts/:id' element={<Post />} />
               <Route 
                 path='/login' 
                 element={!user ? <Login /> : <Navigate to="/" />} />
@@ -63,7 +63,7 @@ function App() {
                 element={user ? <CreatePost /> : <Navigate to="/" />} />
               <Route 
                 path='/dashboard' 
-                element={user ? <Dashboard /> : <Navigate to="/" />} />
+                element={user ? <Dashboard /> : <Navigate to="/" />} />              
             </Routes>
           </div>
           <Footer />
